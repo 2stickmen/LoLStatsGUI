@@ -7,10 +7,21 @@ import wget
 from db import Database
 
 
+
 db = Database('store.db')
 
 apiKey = 'RGAPI-49b70ff5-5090-4132-a108-f7da98a20b65'
 user = 'RestInKill'
+
+churl = 'http://ddragon.leagueoflegends.com/cdn/10.4.1/data/en_US/champion.json'
+
+req = requests.get(churl)
+champs = req.json()
+
+champions = [champ for champ in champs['data']]
+
+def getNameOrderFromName(name):
+    return champions.index(name) +1
 
 def getIdFromName(username):
     url = 'https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{}?api_key={}'
@@ -93,8 +104,15 @@ def remove_item():
     db.remove(selected_item[0])
     populate_list()
 
-
-
+#%%
+pool_raw = db.fetch()
+champ_pool = []
+for i in pool_raw:
+    champ_pool.append(i[1])
+urls = ['https://gol.gg/champion/champion-stats/{}/season-S10/split-Spring/tournament-ALL/patch-ALL/role-ALL/league-1/'.format(getNameOrderFromName(champname)) for champname in champ_pool]
+#%%
+goob = '0-0'
+gibe = '0%'
 
 
 
@@ -126,8 +144,10 @@ populate_list()
 #Info Panel
 info = Frame(app,height = 50,width=500)
 info.grid(row=0,column=1)
-infoTest = Label(info,text = 'Test :)')
-infoTest.grid(row=0,column=0)
+infoWL = Label(info,text = 'Win/Loss in Competitive: ' + goob)
+infoWL.grid(row=2,column=0)
+infoPB = Label(info,text= 'Pick/Ban in Competitive: ' + gibe)
+infoPB.grid(row=2, column = 2)
 app.mainloop()
 
 
